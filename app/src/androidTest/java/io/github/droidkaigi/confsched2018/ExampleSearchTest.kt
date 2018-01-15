@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched2018
 
+import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.action.ViewActions.typeText
@@ -9,7 +10,11 @@ import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.filters.LargeTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import android.support.test.uiautomator.By
+import android.support.test.uiautomator.UiDevice
+import android.support.test.uiautomator.Until
 import io.github.droidkaigi.confsched2018.presentation.MainActivity
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,6 +31,16 @@ class ExampleSearchTest {
     @Rule
     val mActivityRule = ActivityTestRule(MainActivity::class.java)
 
+    private val appContext = InstrumentationRegistry.getTargetContext()!!
+
+    private var uiDevice: UiDevice? = null
+
+    @Before
+    fun setUp() {
+        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+    }
+
     @Test
     fun search() {
         onView(withId(R.id.navigation_search)).perform(click())
@@ -34,7 +49,7 @@ class ExampleSearchTest {
 
         onView(withId(R.id.search_src_text)).perform(typeText("duck"))
 
-        Thread.sleep(2000) // TODO sleepじゃない方法
+        uiDevice!!.wait(Until.hasObject(By.res(appContext.packageName, "search_content")), 2000)
 
         onView(withId(R.id.search_content)).perform(click())
 
