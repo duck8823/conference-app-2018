@@ -20,11 +20,14 @@ import io.github.droidkaigi.confsched2018.di.Injectable
 import io.github.droidkaigi.confsched2018.model.Session
 import io.github.droidkaigi.confsched2018.presentation.NavigationController
 import io.github.droidkaigi.confsched2018.presentation.Result
-import io.github.droidkaigi.confsched2018.presentation.sessions.item.DateSessionsSection
-import io.github.droidkaigi.confsched2018.presentation.sessions.item.SpeechSessionItem
+import io.github.droidkaigi.confsched2018.presentation.sessions.item.FavoriteSessionItem
+import io.github.droidkaigi.confsched2018.presentation.sessions.item.FavoriteSessionsSection
+import io.github.droidkaigi.confsched2018.util.SessionAlarm
+import io.github.droidkaigi.confsched2018.util.ProgressTimeLatch
 import io.github.droidkaigi.confsched2018.util.ext.addOnScrollListener
 import io.github.droidkaigi.confsched2018.util.ext.isGone
 import io.github.droidkaigi.confsched2018.util.ext.observe
+import io.github.droidkaigi.confsched2018.util.ext.setLinearDivider
 import io.github.droidkaigi.confsched2018.util.ext.setTextIfChanged
 import io.github.droidkaigi.confsched2018.util.ext.setVisible
 import timber.log.Timber
@@ -34,20 +37,18 @@ class FavoriteSessionsFragment : Fragment(), Injectable {
 
     private lateinit var binding: FragmentFavoriteSessionsBinding
 
-    private val sessionsSection = DateSessionsSection(this)
+    private val sessionsSection = FavoriteSessionsSection()
 
     @Inject lateinit var navigationController: NavigationController
+    @Inject lateinit var sessionAlarm: SessionAlarm
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private val sessionsViewModel: FavoriteSessionsViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(FavoriteSessionsViewModel::class.java)
     }
 
     private val onFavoriteClickListener = { session: Session.SpeechSession ->
-        // Since it takes time to change the favorite state, change only the state of View first
-        session.isFavorited = !session.isFavorited
-        binding.sessionsRecycler.adapter.notifyDataSetChanged()
-
         sessionsViewModel.onFavoriteClick(session)
+        sessionAlarm.toggleRegister(session)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -61,17 +62,23 @@ class FavoriteSessionsFragment : Fragment(), Injectable {
 
         setupRecyclerView()
 
+        val progressTimeLatch = ProgressTimeLatch {
+            binding.progress.visibility = if (it) View.VISIBLE else View.GONE
+        }
+        progressTimeLatch.loading = true
         sessionsViewModel.sessions.observe(this, { result ->
             when (result) {
                 is Result.Success -> {
+                    progressTimeLatch.loading = false
                     val sessions = result.data
                     sessionsSection.updateSessions(
-                            sessions, onFavoriteClickListener, simplify = true)
+                            sessions, onFavoriteClickListener)
                     binding.mysessionInactiveGroup.setVisible(sessions.isEmpty())
                     binding.sessionsRecycler.setVisible(sessions.isNotEmpty())
                 }
                 is Result.Failure -> {
                     Timber.e(result.e)
+                    progressTimeLatch.loading = false
                 }
             }
         })
@@ -81,7 +88,7 @@ class FavoriteSessionsFragment : Fragment(), Injectable {
         val groupAdapter = GroupAdapter<ViewHolder>().apply {
             add(sessionsSection)
             setOnItemClickListener({ item, _ ->
-                val sessionItem = item as? SpeechSessionItem ?: return@setOnItemClickListener
+                val sessionItem = item as? FavoriteSessionItem ?: return@setOnItemClickListener
                 navigationController.navigateToSessionDetailActivity(sessionItem.session)
             })
         }
@@ -102,6 +109,8 @@ class FavoriteSessionsFragment : Fragment(), Injectable {
                         val dayTitle = getString(R.string.session_day_title, dayNumber)
                         binding.dayHeader.setTextIfChanged(dayTitle)
                     })
+            setLinearDivider(R.drawable.shape_divider_vertical_6dp,
+                    layoutManager as LinearLayoutManager)
         }
     }
 

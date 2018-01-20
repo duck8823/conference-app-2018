@@ -8,19 +8,35 @@ import io.github.droidkaigi.confsched2018.data.api.response.Speaker
 import io.github.droidkaigi.confsched2018.data.db.entity.LevelEntity
 import io.github.droidkaigi.confsched2018.data.db.entity.RoomEntity
 import io.github.droidkaigi.confsched2018.data.db.entity.SessionEntity
+import io.github.droidkaigi.confsched2018.data.db.entity.SessionFeedbackEntity
 import io.github.droidkaigi.confsched2018.data.db.entity.SessionSpeakerJoinEntity
 import io.github.droidkaigi.confsched2018.data.db.entity.SpeakerEntity
 import io.github.droidkaigi.confsched2018.data.db.entity.TopicEntity
+import io.github.droidkaigi.confsched2018.model.SessionFeedback
 
 fun List<Session>?.toSessionSpeakerJoinEntities(): List<SessionSpeakerJoinEntity> {
     val sessionSpeakerJoinEntity: MutableList<SessionSpeakerJoinEntity> = arrayListOf()
     this!!.forEach { responseSession ->
         responseSession.speakers!!.forEach { speakerId ->
             sessionSpeakerJoinEntity +=
-                    SessionSpeakerJoinEntity(responseSession.id!!, speakerId!!)
+                    SessionSpeakerJoinEntity(responseSession.id, speakerId!!)
         }
     }
     return sessionSpeakerJoinEntity
+}
+
+fun SessionFeedback.toSessionFeedbackEntity(): SessionFeedbackEntity {
+    return SessionFeedbackEntity(
+            id = null,
+            sessionId = sessionId,
+            totalEvaluation = totalEvaluation,
+            relevancy = relevancy,
+            asExpected = asExpected,
+            difficulty = difficulty,
+            knowledgeable = knowledgeable,
+            comment = comment,
+            submitted = submitted
+    )
 }
 
 fun List<Session>?.toSessionEntities(
@@ -37,7 +53,7 @@ fun Session.toSessionEntity(categories: List<Category>?, rooms: List<Room>?): Se
     val topic = categories.category(2, categoryItems[2])
     val level = categories.category(3, categoryItems[3])
     return SessionEntity(
-            id = id!!,
+            id = id,
             title = title!!,
             desc = description!!,
             stime = startsAt!!,

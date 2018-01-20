@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v4.view.ViewPager
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -24,7 +23,10 @@ import io.github.droidkaigi.confsched2018.util.ext.observe
 import timber.log.Timber
 import javax.inject.Inject
 
-class SessionDetailActivity : BaseActivity(), HasSupportFragmentInjector {
+class SessionDetailActivity :
+        BaseActivity(),
+        HasSupportFragmentInjector,
+        SessionDetailFragment.OnClickBottomAreaListener {
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     @Inject lateinit var navigationController: NavigationController
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -46,12 +48,10 @@ class SessionDetailActivity : BaseActivity(), HasSupportFragmentInjector {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setSupportActionBar(binding.toolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setDisplayShowTitleEnabled(false)
         }
-        binding.toolbar.setNavigationOnClickListener { finish() }
         sessionDetailViewModel.sessions.observe(this) { result ->
             when (result) {
                 is Result.Success -> {
@@ -65,21 +65,7 @@ class SessionDetailActivity : BaseActivity(), HasSupportFragmentInjector {
         }
 
         binding.detailSessionsPager.adapter = pagerAdapter
-        binding.detailSessionsPager.addOnPageChangeListener(
-                object : ViewPager.SimpleOnPageChangeListener() {
-
-                    override fun onPageSelected(position: Int) {
-                        updateSessionIndicator(position)
-                    }
-                }
-        )
-        binding.detailSessionsPrevSession.setOnClickListener {
-            binding.detailSessionsPager.currentItem = binding.detailSessionsPager.currentItem - 1
-        }
-        binding.detailSessionsNextSession.setOnClickListener {
-            binding.detailSessionsPager.currentItem = binding.detailSessionsPager.currentItem + 1
-        }
-        drawerMenu.setup(binding.toolbar, binding.drawerLayout, binding.drawer)
+        drawerMenu.setup(binding.drawerLayout, binding.drawer)
     }
 
     private fun bindSessions(sessions: List<Session.SpeechSession>) {
@@ -94,13 +80,7 @@ class SessionDetailActivity : BaseActivity(), HasSupportFragmentInjector {
                             position,
                             false
                     )
-            updateSessionIndicator(position)
         }
-    }
-
-    private fun updateSessionIndicator(position: Int) {
-        binding.prevSession = pagerAdapter.sessions.getOrNull(position - 1)
-        binding.nextSession = pagerAdapter.sessions.getOrNull(position + 1)
     }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = dispatchingAndroidInjector
@@ -109,6 +89,14 @@ class SessionDetailActivity : BaseActivity(), HasSupportFragmentInjector {
         if (drawerMenu.closeDrawerIfNeeded()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onClickPrevSession() {
+        binding.detailSessionsPager.currentItem = binding.detailSessionsPager.currentItem - 1
+    }
+
+    override fun onClickNextSession() {
+        binding.detailSessionsPager.currentItem = binding.detailSessionsPager.currentItem + 1
     }
 
     class SessionDetailFragmentPagerAdapter(
@@ -128,11 +116,15 @@ class SessionDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     }
 
     companion object {
-        val EXTRA_SESSION_ID = "EXTRA_SESSION_ID"
+        const val EXTRA_SESSION_ID = "EXTRA_SESSION_ID"
         fun start(context: Context, session: Session) {
-            context.startActivity(Intent(context, SessionDetailActivity::class.java).apply {
-                putExtra(EXTRA_SESSION_ID, session.id)
-            })
+            context.startActivity(createIntent(context, session.id))
+        }
+
+        fun createIntent(context: Context, sessionId: String): Intent {
+            return Intent(context, SessionDetailActivity::class.java).apply {
+                putExtra(EXTRA_SESSION_ID, sessionId)
+            }
         }
     }
 }
