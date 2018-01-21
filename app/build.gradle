@@ -184,26 +184,10 @@ dependencies {
 
     testImplementation depends.threetenbp
 
-    // LeakCanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
 
-    // Stetho
-    def stethoVersion = '1.5.0'
-    debugImplementation "com.facebook.stetho:stetho:$stethoVersion"
-    debugImplementation "com.facebook.stetho:stetho-okhttp3:$stethoVersion"
-
-    // Test
-    testImplementation 'junit:junit:4.12'
-    testImplementation "com.nhaarman:mockito-kotlin:1.5.0"
-    // Unit Test
-    testImplementation "org.robolectric:robolectric:3.5.1"
-    testImplementation 'com.willowtreeapps.assertk:assertk:0.9'
-    // Instrumentation Test
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
     androidTestImplementation depends.supporttest.runner
     androidTestImplementation depends.supporttest.espresso
+    androidTestImplementation depends.uiautomator
 }
 
 repositories {

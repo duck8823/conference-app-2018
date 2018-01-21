@@ -7,7 +7,8 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -21,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("io.github.droidkaigi.confsched2018", appContext.getPackageName());
+        assertThat(appContext.getPackageName(), containsString("io.github.droidkaigi.confsched2018"));
     }
 }
