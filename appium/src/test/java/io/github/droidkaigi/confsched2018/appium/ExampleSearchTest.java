@@ -15,6 +15,7 @@ import io.appium.java_client.android.AndroidDriver;
 
 import static org.junit.Assert.assertEquals;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.numberOfElementsToBeMoreThan;
 
 public class ExampleSearchTest {
 
@@ -42,6 +43,8 @@ public class ExampleSearchTest {
 
     @Test
     public void search() {
+        wait.until(numberOfElementsToBeMoreThan(byId("title"), 1));
+
         By navSearch = byId("navigation_search");
         wait.until(elementToBeClickable(navSearch));
 

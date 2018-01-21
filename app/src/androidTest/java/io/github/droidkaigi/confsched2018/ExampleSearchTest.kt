@@ -43,6 +43,8 @@ class ExampleSearchTest {
 
     @Test
     fun search() {
+        uiDevice!!.wait(Until.hasObject(By.res(appContext.packageName, "text")), 2000)
+
         onView(withId(R.id.navigation_search)).perform(click())
 
         onView(withId(R.id.search_button)).perform(click())
