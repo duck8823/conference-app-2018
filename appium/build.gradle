@@ -13,3 +13,9 @@ dependencies {
 // For Visual Studio App Center
 group = 'conference-app-2018'
 version = '0.0.1-SNAPSHOT'
+
+task testLocal(type: Test) {
+    useJUnit {
+        includeCategories 'io.github.droidkaigi.confsched2018.categories.LocalTest'
+    }
+}

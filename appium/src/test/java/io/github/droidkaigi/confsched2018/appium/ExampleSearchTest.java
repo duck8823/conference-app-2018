@@ -4,6 +4,7 @@ package io.github.droidkaigi.confsched2018.appium;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.openqa.selenium.By;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -12,11 +13,13 @@ import java.io.File;
 import java.net.URL;
 
 import io.appium.java_client.android.AndroidDriver;
+import io.github.droidkaigi.confsched2018.categories.LocalTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.numberOfElementsToBeMoreThan;
 
+@Category(LocalTest.class)
 public class ExampleSearchTest {
 
     private static AndroidDriver driver;
