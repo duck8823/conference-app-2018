@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Appium
+    testCompile 'junit:junit:4.12'
+    testCompile 'io.appium:java-client:5.0.4'
+}
+
+// For Visual Studio App Center
+group = 'conference-app-2018'
+version = '0.0.1-SNAPSHOT'
