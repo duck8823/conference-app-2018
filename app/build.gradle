@@ -184,8 +184,10 @@ dependencies {
 
     testImplementation depends.threetenbp
 
+
     androidTestImplementation depends.supporttest.runner
     androidTestImplementation depends.supporttest.espresso
+    androidTestImplementation depends.uiautomator
 }
 
 repositories {
