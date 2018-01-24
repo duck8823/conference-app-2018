@@ -20,10 +20,10 @@ import io.github.droidkaigi.confsched2018.di.Injectable
 import io.github.droidkaigi.confsched2018.model.Session
 import io.github.droidkaigi.confsched2018.presentation.NavigationController
 import io.github.droidkaigi.confsched2018.presentation.Result
-import io.github.droidkaigi.confsched2018.presentation.sessions.item.FavoriteSessionItem
 import io.github.droidkaigi.confsched2018.presentation.sessions.item.FavoriteSessionsSection
-import io.github.droidkaigi.confsched2018.util.SessionAlarm
+import io.github.droidkaigi.confsched2018.presentation.sessions.item.SpeechSessionItem
 import io.github.droidkaigi.confsched2018.util.ProgressTimeLatch
+import io.github.droidkaigi.confsched2018.util.SessionAlarm
 import io.github.droidkaigi.confsched2018.util.ext.addOnScrollListener
 import io.github.droidkaigi.confsched2018.util.ext.isGone
 import io.github.droidkaigi.confsched2018.util.ext.observe
@@ -88,7 +88,7 @@ class FavoriteSessionsFragment : Fragment(), Injectable {
         val groupAdapter = GroupAdapter<ViewHolder>().apply {
             add(sessionsSection)
             setOnItemClickListener({ item, _ ->
-                val sessionItem = item as? FavoriteSessionItem ?: return@setOnItemClickListener
+                val sessionItem = item as? SpeechSessionItem ?: return@setOnItemClickListener
                 navigationController.navigateToSessionDetailActivity(sessionItem.session)
             })
         }
@@ -109,7 +109,7 @@ class FavoriteSessionsFragment : Fragment(), Injectable {
                         val dayTitle = getString(R.string.session_day_title, dayNumber)
                         binding.dayHeader.setTextIfChanged(dayTitle)
                     })
-            setLinearDivider(R.drawable.shape_divider_vertical_6dp,
+            setLinearDivider(R.drawable.shape_divider_vertical_12dp,
                     layoutManager as LinearLayoutManager)
         }
     }

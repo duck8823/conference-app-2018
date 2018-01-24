@@ -11,6 +11,7 @@ import io.github.droidkaigi.confsched2018.R
 import io.github.droidkaigi.confsched2018.model.Session
 import io.github.droidkaigi.confsched2018.presentation.about.AboutThisAppActivity
 import io.github.droidkaigi.confsched2018.presentation.about.AboutThisAppFragment
+import io.github.droidkaigi.confsched2018.presentation.common.fragment.Findable
 import io.github.droidkaigi.confsched2018.presentation.contributor.ContributorsActivity
 import io.github.droidkaigi.confsched2018.presentation.contributor.ContributorsFragment
 import io.github.droidkaigi.confsched2018.presentation.detail.SessionDetailActivity
@@ -27,6 +28,8 @@ import io.github.droidkaigi.confsched2018.presentation.speaker.SpeakerDetailActi
 import io.github.droidkaigi.confsched2018.presentation.speaker.SpeakerDetailFragment
 import io.github.droidkaigi.confsched2018.presentation.sponsors.SponsorsActivity
 import io.github.droidkaigi.confsched2018.presentation.sponsors.SponsorsFragment
+import io.github.droidkaigi.confsched2018.presentation.staff.StaffActivity
+import io.github.droidkaigi.confsched2018.presentation.staff.StaffFragment
 import io.github.droidkaigi.confsched2018.presentation.topic.TopicDetailActivity
 import io.github.droidkaigi.confsched2018.presentation.topic.TopicDetailFragment
 import io.github.droidkaigi.confsched2018.util.CustomTabsHelper
@@ -83,7 +86,7 @@ class NavigationController @Inject constructor(private val activity: AppCompatAc
     private fun replaceFragment(fragment: Fragment) {
         fragmentManager
                 .beginTransaction()
-                .replace(containerId, fragment)
+                .replace(containerId, fragment, (fragment as? Findable)?.tagForFinding)
                 .commitAllowingStateLoss()
     }
 
@@ -91,8 +94,20 @@ class NavigationController @Inject constructor(private val activity: AppCompatAc
         replaceFragment(ContributorsFragment.newInstance())
     }
 
+    fun navigateToStaff() {
+        replaceFragment(StaffFragment.newInstance())
+    }
+
+    fun navigateToMainActivity() {
+        MainActivity.start(activity)
+    }
+
     fun navigateToContributorActivity() {
         ContributorsActivity.start(activity)
+    }
+
+    fun navigateToStaffActivity() {
+        StaffActivity.start(activity)
     }
 
     fun navigateToSessionDetailActivity(session: Session) {
@@ -127,11 +142,6 @@ class NavigationController @Inject constructor(private val activity: AppCompatAc
         val customTabsIntent = CustomTabsIntent.Builder()
                 .setShowTitle(true)
                 .setToolbarColor(ContextCompat.getColor(activity, R.color.primary))
-                .setExitAnimations(
-                        activity,
-                        android.R.anim.slide_in_left,
-                        android.R.anim.slide_out_right
-                )
                 .build()
                 .apply {
                     val appUri = Uri.parse("android-app://${activity.packageName}")

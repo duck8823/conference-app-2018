@@ -8,22 +8,26 @@ class SimpleSessionsSection : Section() {
     fun updateSessions(
             sessions: List<Session>,
             onFavoriteClickListener: (Session.SpeechSession) -> Unit,
-            searchQuery: String = ""
+            searchQuery: String = "",
+            userIdInDetail: String? = null
     ) {
         val sessionItems = sessions.map {
             when (it) {
                 is Session.SpeechSession -> {
                     @Suppress("USELESS_CAST")
                     SpeechSessionItem(
-                            it,
-                            onFavoriteClickListener,
-                            true,
-                            searchQuery
+                            session = it,
+                            onFavoriteClickListener = onFavoriteClickListener,
+                            isShowDayNumber = true,
+                            searchQuery = searchQuery,
+                            userIdInDetail = userIdInDetail
                     ) as Item<*>
                 }
                 is Session.SpecialSession -> {
                     @Suppress("USELESS_CAST")
-                    SpecialSessionItem(it) as Item<*>
+                    SpecialSessionItem(
+                            session = it
+                    ) as Item<*>
                 }
             }
         }

@@ -12,6 +12,7 @@ import android.support.v7.widget.SimpleItemAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import io.github.droidkaigi.confsched2018.R
@@ -23,6 +24,7 @@ import io.github.droidkaigi.confsched2018.presentation.NavigationController
 import io.github.droidkaigi.confsched2018.presentation.Result
 import io.github.droidkaigi.confsched2018.presentation.sessions.item.DateSessionsSection
 import io.github.droidkaigi.confsched2018.presentation.sessions.item.SpeechSessionItem
+import io.github.droidkaigi.confsched2018.presentation.sessions.SessionsFragment.CurrentSessionScroller
 import io.github.droidkaigi.confsched2018.util.ProgressTimeLatch
 import io.github.droidkaigi.confsched2018.util.SessionAlarm
 import io.github.droidkaigi.confsched2018.util.ext.addOnScrollListener
@@ -37,8 +39,9 @@ import timber.log.Timber
 import java.util.Date
 import javax.inject.Inject
 
-class RoomSessionsFragment : Fragment(), Injectable {
+class RoomSessionsFragment : Fragment(), Injectable, CurrentSessionScroller {
 
+    private var fireBaseAnalytics: FirebaseAnalytics? = null
     private lateinit var binding: FragmentRoomSessionsBinding
     private lateinit var roomName: String
 
@@ -81,7 +84,7 @@ class RoomSessionsFragment : Fragment(), Injectable {
             when (result) {
                 is Result.Success -> {
                     val sessions = result.data
-                    sessionsSection.updateSessions(sessions, onFavoriteClickListener)
+                    sessionsSection.updateSessions(sessions, onFavoriteClickListener, true)
 
                     sessionsViewModel.onSuccessFetchSessions()
                 }
@@ -95,11 +98,28 @@ class RoomSessionsFragment : Fragment(), Injectable {
         })
         sessionsViewModel.refreshFocusCurrentSession.observe(this, {
             if (it != true) return@observe
-            val now = Date(ZonedDateTime.now(ZoneId.of(ZoneId.SHORT_IDS["JST"]))
-                    .toInstant().toEpochMilli())
-            val currentSessionPosition = sessionsSection.getDateHeaderPositionByDate(now)
-            binding.sessionsRecycler.scrollToPosition(currentSessionPosition)
+            scrollToCurrentSession()
         })
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        fireBaseAnalytics = FirebaseAnalytics.getInstance(context)
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        if (isVisibleToUser) {
+            fireBaseAnalytics?.setCurrentScreen(activity!!, null, this::class.java
+                    .simpleName + sessionsViewModel.roomName)
+        }
+    }
+
+    override fun scrollToCurrentSession() {
+        val now = Date(ZonedDateTime.now(ZoneId.of(ZoneId.SHORT_IDS["JST"]))
+                .toInstant().toEpochMilli())
+        val currentSessionPosition = sessionsSection.getDateHeaderPositionByDate(now)
+        binding.sessionsRecycler.scrollToPosition(currentSessionPosition)
     }
 
     private fun setupRecyclerView() {
@@ -127,7 +147,7 @@ class RoomSessionsFragment : Fragment(), Injectable {
                         val dayTitle = getString(R.string.session_day_title, dayNumber)
                         binding.dayHeader.setTextIfChanged(dayTitle)
                     })
-            setLinearDivider(R.drawable.shape_divider_vertical_6dp,
+            setLinearDivider(R.drawable.shape_divider_vertical_12dp,
                     layoutManager as LinearLayoutManager)
         }
     }
