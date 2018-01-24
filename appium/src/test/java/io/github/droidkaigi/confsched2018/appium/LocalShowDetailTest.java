@@ -14,7 +14,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.github.droidkaigi.confsched2018.categories.Local;
 
 @Category(Local.class)
-public class LocalExampleSearchTest extends AbstractExampleSearchTest {
+public class LocalShowDetailTest extends AbstractShowDetailTest {
 
     private static WebDriverWait wait;
     private static AndroidDriver driver;
