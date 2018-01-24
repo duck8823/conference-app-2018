@@ -11,9 +11,9 @@ import java.io.File;
 import java.net.URL;
 
 import io.appium.java_client.android.AndroidDriver;
-import io.github.droidkaigi.confsched2018.categories.LocalTest;
+import io.github.droidkaigi.confsched2018.categories.Local;
 
-@Category(LocalTest.class)
+@Category(Local.class)
 public class LocalExampleSearchTest extends AbstractExampleSearchTest {
 
     private static WebDriverWait wait;
