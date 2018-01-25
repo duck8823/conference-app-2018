@@ -1,8 +1,8 @@
 package io.github.droidkaigi.confsched2018.appium;
 
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.experimental.categories.Category;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -28,8 +28,8 @@ public class LocalShowDetailTest extends AbstractShowDetailTest {
         return driver;
     }
 
-    @BeforeClass
-    public static void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName","Android");
         capabilities.setCapability("platformVersion", "7.1");
@@ -42,8 +42,8 @@ public class LocalShowDetailTest extends AbstractShowDetailTest {
         wait = new WebDriverWait(driver, 30);
     }
 
-    @AfterClass
-    public static void tearDown() {
+    @After
+    public void tearDown() {
         driver.quit();
     }
 
