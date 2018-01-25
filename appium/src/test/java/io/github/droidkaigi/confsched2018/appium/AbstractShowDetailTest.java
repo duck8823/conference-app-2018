@@ -30,7 +30,7 @@ public abstract class AbstractShowDetailTest {
 
         recyclerView.findElements(By.xpath("//android.view.ViewGroup")).get(3).click();
 
-        assertEquals("Kotlinアンチパターン", driver().findElement(byId("title")).getText());
+        assertEquals("Kotlinアンチパターン", driver().findElement(byId("session_title")).getText());
     }
 
 

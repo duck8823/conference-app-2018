@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 
 repositories {
     mavenCentral()
@@ -8,14 +9,27 @@ dependencies {
     // Appium
     testCompile 'junit:junit:4.12'
     testCompile 'io.appium:java-client:5.0.4'
-}
 
-// For Visual Studio App Center
-group = 'conference-app-2018'
-version = '0.0.1-SNAPSHOT'
+    // AppCenter
+    testCompile 'com.microsoft.appcenter:appium-test-extension:1.0'
+}
 
 task testLocal(type: Test) {
     useJUnit {
-        includeCategories 'io.github.droidkaigi.confsched2018.categories.LocalTest'
+        includeCategories 'io.github.droidkaigi.confsched2018.categories.Local'
     }
+}
+
+task createPom {
+    pom {
+        withXml {
+            def repositoriesNode = asNode().appendNode('repositories')
+            def repositoryNode = repositoriesNode.appendNode('repository')
+            repositoryNode.appendNode('id', 'jcenter')
+            repositoryNode.appendNode('url', 'http://jcenter.bintray.com/')
+
+            def profilesNode = asNode().appendNode('profiles')
+            profilesNode.append(new XmlParser().parse('https://raw.githubusercontent.com/Microsoft/AppCenter-Test-Appium-Java-Extensions/master/gradleuploadprofilesnippet.xml'))
+        }
+    }.writeTo("pom.xml")
 }
