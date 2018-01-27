@@ -14,7 +14,7 @@ dependencies {
     testCompile 'com.microsoft.appcenter:appium-test-extension:1.0'
 }
 
-task createPom {
+task createPomForAppCenter {
     pom {
         withXml {
             def repositoriesNode = asNode().appendNode('repositories')
@@ -25,5 +25,54 @@ task createPom {
             def profilesNode = asNode().appendNode('profiles')
             profilesNode.append(new XmlParser().parse('https://raw.githubusercontent.com/Microsoft/AppCenter-Test-Appium-Java-Extensions/master/gradleuploadprofilesnippet.xml'))
         }
-    }.writeTo("pom.xml")
+    }.writeTo("pom.appcenter.xml")
+}
+
+task createPomForDeviceFarm {
+    pom {
+        withXml {
+            def repositoriesNode = asNode().appendNode('repositories')
+            def repositoryNode = repositoriesNode.appendNode('repository')
+            repositoryNode.appendNode('id', 'jcenter')
+            repositoryNode.appendNode('url', 'http://jcenter.bintray.com/')
+
+            def pluginsNode = asNode().appendNode('build')
+                                      .appendNode('plugins')
+            def pluginNode = pluginsNode.appendNode('plugin')
+            pluginNode.appendNode('groupId', 'org.apache.maven.plugins')
+            pluginNode.appendNode('artifactId', 'maven-jar-plugin')
+            pluginNode.appendNode('version', '2.6')
+            pluginNode.appendNode('executions')
+                      .appendNode('execution')
+                      .appendNode('goals')
+                      .appendNode('goal', 'test-jar')
+
+            pluginNode = pluginsNode.appendNode('plugin')
+            pluginNode.appendNode('groupId', 'org.apache.maven.plugins')
+            pluginNode.appendNode('artifactId', 'maven-dependency-plugin')
+            pluginNode.appendNode('version', '2.10')
+            def executionNode = pluginNode.appendNode('executions')
+                                          .appendNode('execution')
+            executionNode.appendNode('id', 'copy-dependencies')
+            executionNode.appendNode('phase', 'package')
+            executionNode.appendNode('goals')
+                         .appendNode('goal', 'copy-dependencies')
+            executionNode.appendNode('configuration')
+                         .appendNode('outputDirectory', '${project.build.directory}/dependency-jars/')
+
+            pluginNode = pluginsNode.appendNode('plugin')
+            pluginNode.appendNode('artifactId', 'maven-assembly-plugin')
+            pluginNode.appendNode('version', '2.5.4')
+            executionNode = pluginNode.appendNode('executions')
+                                      .appendNode('execution')
+            executionNode.appendNode('phase', 'package')
+            executionNode.appendNode('goals')
+                         .appendNode('goal', 'single')
+            def configurationNode = executionNode.appendNode('configuration')
+            configurationNode.appendNode('finalName', 'zip-with-dependencies')
+            configurationNode.appendNode('appendAssemblyId', 'false')
+            configurationNode.appendNode('descriptors')
+                             .appendNode('descriptor', './zip.xml')
+        }
+    }.writeTo("pom.devicefarm.xml")
 }
