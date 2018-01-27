@@ -23,11 +23,17 @@ import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 import assertk.assert
 import assertk.assertions.isInstanceOf
+import com.microsoft.appcenter.espresso.Factory
 import io.github.droidkaigi.confsched2018.presentation.detail.SessionDetailActivity
+import org.junit.After
+
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class ShowDetailActivityTest {
+
+    @get:Rule
+    var reportHelper = Factory.getReportHelper()
 
     @Suppress("unused")
     @get:Rule
@@ -66,4 +72,8 @@ class ShowDetailActivityTest {
 
     }
 
+    @After
+    fun TearDown() {
+        reportHelper.label("Stopping App")
+    }
 }
