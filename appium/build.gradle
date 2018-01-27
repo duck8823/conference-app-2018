@@ -14,12 +14,6 @@ dependencies {
     testCompile 'com.microsoft.appcenter:appium-test-extension:1.0'
 }
 
-task testLocal(type: Test) {
-    useJUnit {
-        includeCategories 'io.github.droidkaigi.confsched2018.categories.Local'
-    }
-}
-
 task createPom {
     pom {
         withXml {
