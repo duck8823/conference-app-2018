@@ -17,6 +17,7 @@ buildscript {
         classpath "com.google.gms:oss-licenses:$versions.ossLicenses"
         classpath "com.deploygate:gradle:$versions.deploygate"
         classpath "com.github.triplet.gradle:play-publisher:$versions.playPublisher"
+        classpath "com.amazonaws:aws-devicefarm-gradle-plugin:$versions.devicefarm"
     }
 }
 

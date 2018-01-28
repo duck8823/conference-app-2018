@@ -1,0 +1,46 @@
+fastlane_version "2.51.0"
+
+default_platform :android
+
+platform :android do
+    lane :devicefarm_fuzz do
+      gradle(task: 'app:assembleDebug')
+
+      aws_device_farm(
+        name:                'conference-app-2018',
+        test_type:           'BUILTIN_FUZZ',
+        device_pool:         'demo',
+        binary_path:         'app/build/outputs/apk/debug/app-debug.apk'
+      )
+    end
+
+    lane :devicefarm_instrumentation do
+      gradle(task: 'app:assembleDebug')
+      gradle(task: 'app:assembleAndroidTest')
+
+      aws_device_farm(
+        name:                'conference-app-2018',
+        test_type:           'INSTRUMENTATION',
+        device_pool:         'demo',
+        binary_path:         'app/build/outputs/apk/debug/app-debug.apk',
+        test_package_type:   'INSTRUMENTATION_TEST_PACKAGE',
+        test_binary_path:    'app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk'
+      )
+    end
+
+    lane :devicefarm_appium do
+      gradle(task: 'app:assembleDebug')
+
+      gradle(task: 'appium:createPomForDeviceFarm')
+      sh('mvn -f ../appium/pom.devicefarm.xml -DskipTests clean package')
+
+      aws_device_farm(
+        name:                'conference-app-2018',
+        test_type:           'APPIUM_JAVA_JUNIT',
+        device_pool:         'demo',
+        binary_path:         'app/build/outputs/apk/debug/app-debug.apk',
+        test_package_type:   'APPIUM_JAVA_JUNIT_TEST_PACKAGE',
+        test_binary_path:    'appium/target/zip-with-dependencies.zip'
+      )
+    end
+end

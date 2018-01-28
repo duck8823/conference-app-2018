@@ -7,6 +7,7 @@ apply plugin: 'com.google.gms.oss.licenses.plugin'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'deploygate'
 apply plugin: 'com.github.triplet.play'
+apply plugin: 'devicefarm'
 
 // Manifest version
 def versionMajor = 0
@@ -242,5 +243,23 @@ deploygate {
             distributionKey = "aed2445665e27de6571227992d66ea489b6bdb44"
             releaseNote = "https://github.com/DroidKaigi/conference-app-2018/tree/${hash} ${System.getenv("CIRCLE_BUILD_URL")}"
         }
+    }
+}
+
+def devicefarmProjectName = "conference-app-2018"
+
+devicefarm {
+    projectName "conference-app-2018"
+
+    devicePool "demo"
+
+    executionTimeoutMinutes 20
+
+    authentication {
+        accessKey System.getenv("AWS_ACCESS_KEY_ID")
+        secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
+    }
+
+    fuzz {
     }
 }
